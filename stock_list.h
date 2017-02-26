@@ -28,7 +28,7 @@ class StockList
 		void editStock(const char[]);
 		void addStock(const char[]);
 		int searchStock(StockList&); // enter StockList class
-		void removeStock(const char[]);
+		void removeStock(const char[], TransactionList);
 		
 		//////// Compare functions ///////////
 		bool compIDAsc(Stock&, Stock&);
@@ -95,66 +95,66 @@ bool StockList::compIDDsc(Stock &lhs, Stock &rhs)
 	return false;
 }
 //----------------------------------------
-bool compDescriptAsc(Stock &lhs, Stock &rhs)       // Compare Stock Descript
+bool StockList::compDescriptAsc(Stock &lhs, Stock &rhs)       // Compare Stock Descript
 {
-	if ( lhs.getStockDescript() < rhs.getStockDescript() )
+	if ( lhs.getStockDescript().compare(rhs.getStockDescript()) < 0 )
 		return true;
 	return false;
 }
 
 bool StockList::compDescriptDsc(Stock &lhs, Stock &rhs)
 {
-	if ( lhs.getStockDescript() > rhs.getStockDescript() )
+	if ( lhs.getStockDescript().compare(rhs.getStockDescript()) > 0 )
 		return true;
 	return false;
 }
 //----------------------------------------
-bool compCatAsc(Stock &lhs, Stock &rhs)  			// Compare Stock Category
+bool StockList::compCatAsc(Stock &lhs, Stock &rhs)  			// Compare Stock Category
 {
-	if ( lhs.getStockCat() < rhs.getStockCat() )
+	if ( lhs.getStockCat().compare(rhs.getStockCat()) < 0 )
 		return true;
 	return false;
 }
 
 
-bool compCatDsc(Stock &lhs, Stock &rhs)
+bool StockList::compCatDsc(Stock &lhs, Stock &rhs)
 {
-	if ( lhs.getStockCat() > rhs.getStockCat() )
+	if ( lhs.getStockCat().compare(rhs.getStockCat()) > 0)
 		return true;
 	return false;
 	
 }
 //----------------------------------------
-bool compSubCatAsc(Stock &lhs, Stock &rhs)			// Compare Stock SubCategory
+bool StockList::compSubCatAsc(Stock &lhs, Stock &rhs)			// Compare Stock SubCategory
 {
-	if ( lhs.getStockSubCat() < rhs.getStockSubCat() )
+	if ( lhs.getStockSubCat().compare(rhs.getStockSubCat()) < 0 )
 		return true;
 	return false;
 }
 
 
-bool compSubCatDsc(Stock &lhs, Stock &rhs)
+bool StockList::compSubCatDsc(Stock &lhs, Stock &rhs)
 {
-	if ( lhs.getStockSubCat() > rhs.getStockSubCat() )
+	if ( lhs.getStockSubCat().compare(rhs.getStockSubCat()) > 0 )
 		return true;
 	return false;
 }
 //----------------------------------------
-bool compAmountAsc(Stock &lhs, Stock &rhs)			// Compare Stock Amount Per Unit
+bool StockList::compAmountAsc(Stock &lhs, Stock &rhs)			// Compare Stock Amount Per Unit
 {
 	if ( lhs.getAmountPerUnit() < rhs.getAmountPerUnit() )
 		return true;
 	return false;
 }
 
-bool compAmountDsc(Stock &lhs, Stock &rhs)
+bool StockList::compAmountDsc( Stock &lhs, Stock &rhs)
 {
 	if ( lhs.getAmountPerUnit() > rhs.getAmountPerUnit() )
 		return true;
 	return false;
 }
 //----------------------------------------
-bool compQtyAsc(Stock &lhs, Stock &rhs)				// Compare Stock Quantity
+bool StockList::compQtyAsc(Stock &lhs, Stock &rhs)				// Compare Stock Quantity
 {
 	if ( lhs.getQty() < rhs.getQty() )
 		return true;
@@ -162,7 +162,7 @@ bool compQtyAsc(Stock &lhs, Stock &rhs)				// Compare Stock Quantity
 }
 
 
-bool compQtyDsc(Stock &lhs, Stock &rhs)
+bool StockList::compQtyDsc(Stock &lhs, Stock &rhs)
 {
 	if ( lhs.getQty() > rhs.getQty() )
 		return true;
@@ -190,8 +190,12 @@ void StockList::addStock(const char fileName[])
 	cout << "\nAdd Stock " << endl;
 	cout << "---------" << endl;
 	
-	cout << "\nEnter Stock ID : ";
-	cin >> intBuffer;
+	do
+	{
+		cout << "\nEnter Stock ID : ";
+		if(cin.fail())	{	cout << "\nPlease enter an integer" << endl; cin.clear();	cin.ignore(20,'\n');	}
+		cin >> intBuffer;
+	}while(cin.fail() || (intBuffer < 0) );
 	stockObj.setStockID(intBuffer);
 	
 	cout << "\nEnter Stock Description : ";
@@ -206,12 +210,20 @@ void StockList::addStock(const char fileName[])
 	cin >> stringBuffer;
 	stockObj.setStockSubCat(stringBuffer);
 	
-	cout << "\nEnter Amount Per Unit : ";
-	cin >> intBuffer;
+	do
+	{
+		cout << "\nEnter Amount Per Unit : ";
+		if(cin.fail())	{	cout << "\nPlease enter an integer" << endl; cin.clear();	cin.ignore(20,'\n');	}
+		cin >> intBuffer;
+	}while(cin.fail() || (intBuffer < 0));
 	stockObj.setAmountPerUnit(intBuffer);
 	
-	cout << "\nEnter Quantity : ";
-	cin >> intBuffer;
+	do
+	{
+		cout << "\nEnter Quantity : ";
+		if(cin.fail())	{	cout << "\nPlease enter an integer" << endl; cin.clear();	cin.ignore(20,'\n');	}
+		cin >> intBuffer;
+	}while(cin.fail() || (intBuffer < 0));
 	stockObj.setQty(intBuffer);
 	
 	stockList.push_back(stockObj);
@@ -233,7 +245,7 @@ void StockList::addStock(const char fileName[])
 
 //------------------------------------------------
 
-void StockList::removeStock(const char fileName[])
+void StockList::removeStock(const char fileName[], TransactionList tL)
 {
 	int tempID, intBuffer;
 	bool notFound = true;
@@ -250,9 +262,12 @@ void StockList::removeStock(const char fileName[])
 	cout << "\nRemove Stock" << endl;
 	cout << "------------" << endl;
 	
-	cout << "\nEnter Stock ID to remove : ";
-	cin >> tempID;
-	
+	do
+	{
+		cout << "\nEnter Stock ID to remove : ";
+		if(cin.fail())	{	cout << "\nPlease enter an integer" << endl; cin.clear();	cin.ignore(20,'\n');	}
+		cin >> tempID;
+	}while(cin.fail() || (tempID < 0) );
 	//Search through vector 
 	for(int i=0; i<stockList.size(); i++)
 	{
@@ -262,14 +277,29 @@ void StockList::removeStock(const char fileName[])
 			
 			// remove from vector
 			stockList.erase(stockList.begin() + i);
-		}
-		
-		
+		}	
 	}
+	
+	
+	
 	if(notFound)
 	{
 		cout << "\nStock ID not found." << endl;
 	}
+	else
+	{
+		for(int j=0; j<tL.tv.size(); j++)
+		{
+			if(tempID == tL.tv.getStockID())
+			{
+				tL.tv.setStockID(-1); // Set Stock ID in tranasctionlist to 
+			}
+		}
+		cout << "\nStock successfully removed." << endl;
+	}
+	
+	
+	
 	
 	//output overwrite to file to update stock
 	for(int i=0; i<stockList.size(); i++)
@@ -283,6 +313,7 @@ void StockList::removeStock(const char fileName[])
 				<< endl;
 	}
 	
+	
 	outfile.close();
 }
 
@@ -292,7 +323,7 @@ void StockList::editStock(const char fileName[])
 {
 	string stringBuffer;
 	int choice, intBuffer;
-	int tempID;
+	int tempID, index;
 	fstream outfile;
 	bool notFound = true;
 	
@@ -315,7 +346,7 @@ void StockList::editStock(const char fileName[])
 		if ( tempID == stockList[i].getStockID() )
 		{
 			notFound == false;
-			
+			index = i;
 			do
 			{
 				cout << "Edit Stock Info : " << endl;
@@ -377,6 +408,21 @@ void StockList::editStock(const char fileName[])
 	if(notFound)
 	{
 		cout << "\nStock ID not found." << endl;
+	}
+	else
+	{
+		for(int j=0; j<tL.tv.size(); j++)
+		{
+			if(tempID == tL.tv.getStockID())
+			{											// Set edited Stock info to transaction info
+				tL.tv.setStockID(stockList[index].getStockID()); // Set Stock ID in tranasctionlist 
+				tL.tv.setStockDescript(stockList[index].getStockDescript());
+				tL.tv.setStockCat(stockList[index].getStockCat());
+				tL.tv.setStockSubCat(stockList[index].getStockSubCat());
+				tL.tv.setAmountPerUnit(stockList[index].getAmountPerUnit());
+				tL.tv.setQty(stockList[index].getQty());
+			}
+		}
 	}
 	
 	// Stock details changed in Vector
@@ -500,7 +546,9 @@ int StockList::searchStock(StockList& sL)
 	
 	do
 	{
-	
+		do
+		{
+		
 		cout << "\nSearch Stock" << endl;
 		cout << "------------" << endl;
 		cout << "\nSearch by : " << endl << endl;
@@ -513,8 +561,9 @@ int StockList::searchStock(StockList& sL)
 		cout << "			7) Exit to Main Menu" << endl;
 		
 		cout << "Enter Search Choice : ";
+		if(cin.fail())	{	cout << "\nPlease enter an integer" << endl; cin.clear();	cin.ignore(20,'\n');	}
 		cin >> choice1;
-		
+		}while(cin.fail());
 
 		switch(choice1)
 		{
